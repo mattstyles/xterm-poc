@@ -1,12 +1,13 @@
 
 import { Terminal } from 'xterm'
 import * as fit from 'xterm/lib/addons/fit/fit'
+import * as fullscreen from 'xterm/lib/addons/fullscreen/fullscreen'
 import chalk from 'chalk'
 import Stats from 'stats.js'
 import { random } from 'lodash/fp'
 
 import 'xterm/lib/xterm.css'
-// import 'xterm/lib/addons/fit/fit.css'
+import 'xterm/lib/addons/fullscreen/fullscreen.css'
 import 'normalize.css'
 
 const el = document.createElement('div')
@@ -19,6 +20,7 @@ stats.dom.style.left = 'auto'
 document.body.appendChild(stats.dom)
 
 Terminal.applyAddon(fit)
+Terminal.applyAddon(fullscreen)
 
 const term = new Terminal({
   rendererType: 'canvas',
@@ -29,12 +31,13 @@ const term = new Terminal({
 term.open(el)
 window.term = term
 
-const fitViewport = term => {
-  term.element.style.height = '100vh'
-  term.fit()
-}
+// @deprecated not needed as fullscreen does this job
+// const fitViewport = term => {
+//   // term.element.style.height = '100vh'
+//   term.fit()
+// }
 
-fitViewport(term)
+// fitViewport(term)
 term.focus()
 
 // term.write('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
@@ -100,6 +103,8 @@ const writeScreen = (term) => () => {
 
   stats.end()
 }
+
+setTimeout(() => term.toggleFullScreen(), 1000)
 
 // setTimeout(writeScreen(term), 3000)
 // window.requestAnimationFrame(writeScreen(term))
