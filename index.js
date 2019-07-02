@@ -5,6 +5,7 @@ import * as fullscreen from 'xterm/lib/addons/fullscreen/fullscreen'
 import chalk from 'chalk'
 import Stats from 'stats.js'
 import { random } from 'lodash/fp'
+import ansi from 'ansi-styles'
 
 import 'xterm/lib/xterm.css'
 import 'xterm/lib/addons/fullscreen/fullscreen.css'
@@ -26,7 +27,10 @@ const term = new Terminal({
   rendererType: 'canvas',
   experimentalCharAtlas: 'dynamic',
   fontFamily: 'DejaVu Sans Mono',
-  fontSize: 18
+  fontSize: 18,
+  theme: {
+    background: '#10181a'
+  }
 })
 term.open(el)
 window.term = term
@@ -45,8 +49,22 @@ term.focus()
 // term.write(chalk.red('Red text'))
 // term.write('\n Next line')
 
+// This is false, which is why it does not work by default
+console.log(chalk.supportsColor)
+
+// Needs level setting as well
+// @TODO may not need new instance, can use global
+const ctx = new chalk.constructor({
+  enabled: true,
+  level: 4
+})
+
 term.writeln('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
 term.writeln('Next line')
+term.writeln(chalk.red('chalk red'))
+term.writeln(ctx.red('chalk red'))
+term.writeln(`${ansi.green.open}Green${ansi.green.close}`)
+term.writeln(`${ansi.blue.open}${ansi.bgColor.bgYellow.open}Green${ansi.bgColor.bgYellow.close}${ansi.blue.close}`)
 term.writeln('\nThe year was 1986.')
 term.writeln('He was a teenager like any other')
 term.writeln('Dreaming of his heroes and in love with a girl')
