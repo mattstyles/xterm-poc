@@ -51,6 +51,7 @@ term.focus()
 
 // This is false, which is why it does not work by default
 console.log(chalk.supportsColor)
+chalk.enabled = true
 
 // Needs level setting as well
 // @TODO may not need new instance, can use global
@@ -62,9 +63,15 @@ const ctx = new chalk.constructor({
 term.writeln('Hello from \x1B[1;3;31mxterm.js\x1B[0m $ ')
 term.writeln('Next line')
 term.writeln(chalk.red('chalk red'))
-term.writeln(ctx.red('chalk red'))
+term.writeln(ctx.red('chalk red: new context'))
 term.writeln(`${ansi.green.open}Green${ansi.green.close}`)
 term.writeln(`${ansi.blue.open}${ansi.bgColor.bgYellow.open}Green${ansi.bgColor.bgYellow.close}${ansi.blue.close}`)
+
+// Utf8 is delayed, possibly overridden by subsequent calls.
+var buf = new Uint8Array(16)
+term.writeUtf8(buf.map((_, i) => 'hello world'.charCodeAt(i) || 0))
+term.write('\r\n')
+
 term.writeln('\nThe year was 1986.')
 term.writeln('He was a teenager like any other')
 term.writeln('Dreaming of his heroes and in love with a girl')
@@ -77,7 +84,7 @@ term.writeln('He and the car had become one, their souls spliced forever')
 term.writeln('Leaving him to wander the night alone\n')
 // term.writeln('Invisible to everyone but her')
 
-var ln = 'Invisible to everyone but her\r\n'.split('')
+var ln = 'Invisible to everyone, but her\r\n'.split('')
 const printLn = (term) => () => {
   term.write(ln.shift())
   setTimeout(printLn(term), 1000 / random(5, 60))
@@ -86,7 +93,7 @@ const printLn = (term) => () => {
 setTimeout(printLn(term), 500)
 
 term.prompt = () => {
-  // term.write('\r\n$ ')
+  term.write(`\r\n ${ctx.yellow('>')} `)
 }
 
 term.prompt()
@@ -122,7 +129,7 @@ const writeScreen = (term) => () => {
   stats.end()
 }
 
-setTimeout(() => term.toggleFullScreen(), 1000)
+// setTimeout(() => term.toggleFullScreen(), 1000)
 
 // setTimeout(writeScreen(term), 3000)
 // window.requestAnimationFrame(writeScreen(term))
